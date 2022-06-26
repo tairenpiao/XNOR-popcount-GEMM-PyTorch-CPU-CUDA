@@ -5,14 +5,13 @@ This code can be used only for research purposes.
 For other purposes (e.g., commercial), please contact me.
 """
 
-from __future__ import print_function
+import time
 import argparse
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
 from torchvision import datasets, transforms
-import time
 from tqdm import tqdm
 from collections import OrderedDict
 
@@ -22,14 +21,12 @@ import binarized_modules as bi
 class Net(nn.Module):
     def __init__(self):
         super(Net, self).__init__()
-        
         self.fc0 = nn.Linear(784,1024)
         self.fc1 = nn.Linear(1024,768)
         self.fc2 = bi.BinarizeLinear_training(768,512)
         # self.fc2 = bi.BinarizeLinear_inference(24,512) # Because we column encode the right matrix
 
         self.fcc = nn.Linear(512, 10)
-
 
     def forward(self, x):
         x = self.fc0(x)
@@ -70,8 +67,6 @@ def train(args, model, device, train_loader, optimizer, epoch):
             break
 
 
-
-
 def test(args, model, device, test_loader):
     model.eval()
     test_loss = 0
@@ -92,9 +87,6 @@ def test(args, model, device, test_loader):
         test_loss, correct, len(test_loader.dataset),
         100. * correct / len(test_loader.dataset)))
     
-
-
-
 
 
 def main():
@@ -151,8 +143,8 @@ def main():
 
     if args.save_model:
         print('saving...')
-        torch.save(model,'./o.pt')
-        torch.save(model.state_dict(), "./o_dict.pt")
+        torch.save(model,'./model.pt')
+        torch.save(model.state_dict(), "./model_dict.pt")
 
     # for k,v in model.state_dict().items():
     #     print(k,v.shape)
@@ -167,7 +159,6 @@ def main():
     #         v = Binary(v)
     #     state_dict_quant[k] = v
     #     print(state_dict_quant[k])
-
 
 
 if __name__ == '__main__':

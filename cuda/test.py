@@ -30,7 +30,6 @@ bin_weight = xnor_cuda.encode_cols(weight_t)
 # print(bin_weight.shape)
 
 
-
 # torch.cuda.synchronize(device="cuda:0")
 # t1 = time.time()
 

@@ -42,7 +42,6 @@ class BinarizeLinear_training(nn.Linear):
         return out
 
 
-
 class BinarizeLinear_inference(nn.Module):
     """ 
         BinarizeLinear_inference class
@@ -63,6 +62,3 @@ class BinarizeLinear_inference(nn.Module):
         out = xnor_linear(input, self.quantized_weight, self.bias)
         # out = nn.functional.linear(input, self.quantized_weight, self.bias)
         return out
-
-
-

@@ -10,7 +10,6 @@ import xnor_cpu
 import time
 
 
-
 m = 512
 n = 512
 k = 512
