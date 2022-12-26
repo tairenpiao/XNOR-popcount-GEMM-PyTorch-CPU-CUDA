@@ -5,11 +5,9 @@ This code can be used only for research purposes.
 For other purposes (e.g., commercial), please contact me.
 """
 
-import time
 import argparse
 import torch
 import torch.nn as nn
-import torch.nn.functional as F
 import torch.optim as optim
 from torchvision import datasets, transforms
 from tqdm import tqdm
@@ -31,11 +29,11 @@ class Net(nn.Module):
     def forward(self, x):
         x = self.fc0(x)
         x = self.fc1(x)
-        x = F.relu(x)
+        x = nn.functional.relu(x)
         x = self.fc2(x)
-        x = F.relu(x)
+        x = nn.functional.relu(x)
         x = self.fcc(x)
-        output = F.log_softmax(x, dim=1)
+        output = nn.functional.log_softmax(x, dim=1)
 
         return output
 
@@ -47,7 +45,7 @@ def train(args, model, device, train_loader, optimizer, epoch):
         data, target = data.to(device), target.to(device)
         optimizer.zero_grad()
         output = model(data)
-        loss = F.nll_loss(output, target)
+        loss = nn.functional.nll_loss(output, target)
         loss.backward()
 
         for p in list(model.parameters()):
@@ -77,7 +75,7 @@ def test(args, model, device, test_loader):
             data = data.view(-1,784)
             data, target = data.to(device), target.to(device)
             output = model(data)
-            test_loss += F.nll_loss(output, target, reduction='sum').item()  # sum up batch loss
+            test_loss += nn.functional.nll_loss(output, target, reduction='sum').item()  # sum up batch loss
             pred = output.argmax(dim=1, keepdim=True)  # get the index of the max log-probability
             correct += pred.eq(target.view_as(pred)).sum().item()
 

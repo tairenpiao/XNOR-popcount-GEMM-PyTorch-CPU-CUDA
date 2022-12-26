@@ -1,7 +1,7 @@
 """
 PyTorch-XNOR-GEMM-Extention
 Authors: Taaron (ptrandpxq@gmail.com)
-This code can be used only for research purposes.
+This code can only be used for research purposes.
 For other purposes (e.g., commercial), please contact me.
 """
 

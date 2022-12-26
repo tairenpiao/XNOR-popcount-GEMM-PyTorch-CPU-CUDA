@@ -1,7 +1,7 @@
 /*
 PyTorch-XNOR-GEMM-Extention
 Authors: Taaron (ptrandpxq@gmail.com)
-This code can be used only for research purposes.
+This code can only be used for research purposes.
 For other purposes (e.g., commercial), please contact me.
 */
 
@@ -14,8 +14,7 @@ For other purposes (e.g., commercial), please contact me.
 
 
 
-namespace{
-
+namespace {
 
 __device__ uint32_t concatenate(float* array)
 {
@@ -23,7 +22,7 @@ __device__ uint32_t concatenate(float* array)
     unsigned int sign;
     
     for (int i = 0; i < 32; i++) {
-        sign = (array[i]>=0);
+        sign = (array[i] >= 0);
         rvalue = rvalue | (sign<<i);
     }
     return rvalue;
@@ -42,9 +41,9 @@ __global__ void encode_rows_kernel(float* input, uint32_t* output, int size)
     uint32_t sign;
     float* array = &input[i*32];
 
-    if(i<size) {
-        for(int j = 0;j < 32;j++) {
-            sign = (array[j]>=0);
+    if(i < size) {
+        for (int j = 0; j < 32; j++) {
+            sign = (array[j] >= 0);
             rvalue = rvalue | (sign<<j);
         }
         output[i] = rvalue;
@@ -54,16 +53,15 @@ __global__ void encode_rows_kernel(float* input, uint32_t* output, int size)
 
 __global__ void encode_cols_kernel(float *a, uint32_t *b, int m, int n)
 {   
-
     const int j = blockIdx.x * blockDim.x + threadIdx.x;
     
-    if(j<n) {
+    if (j < n) {
         float * array = new float[32];
-        for(int i=0; i<m; i+=32) {
-            for(int k=0; k<32;k++) {
+        for(int i = 0; i < m; i += 32) {
+            for(int k = 0; k < 32;k++) {
                 array[k] = a[j + n*(i+k)];
             } 
-            b[j+n*i/32]=concatenate(array); 
+            b[j+n*i/32] = concatenate(array); 
         } 
         delete[] array;
     }
@@ -71,7 +69,8 @@ __global__ void encode_cols_kernel(float *a, uint32_t *b, int m, int n)
 
 
 // A is shape (m,n), B is shape (n,k) and C is shape (m,k)
-__global__ void xnor_gemm_kernel(uint32_t* A, uint32_t* B, float* C, int m, int n, int k) {
+__global__ void xnor_gemm_kernel(uint32_t* A, uint32_t* B, float* C, int m, int n, int k)
+{
     // Block row and column
     const int blockRow = blockIdx.y;
     const int blockCol = blockIdx.x;
@@ -118,22 +117,15 @@ __global__ void xnor_gemm_kernel(uint32_t* A, uint32_t* B, float* C, int m, int 
         __syncthreads();
     }
 
-
     // Write Csub to device memory
     // Each thread writes one element
-    if(col + blockCol* BLOCK_SIZE< k && row + blockRow* BLOCK_SIZE< m) {
+    if(col + blockCol * BLOCK_SIZE < k && row + blockRow * BLOCK_SIZE < m) {
         Csub[row*k+col] = -(2*(float)Cvalue-32*n);
         // Csub[row*k+col] = 99;
     }
-
 }
 
-
-
-
 } //namespace
-
-
 
 
 
@@ -143,8 +135,8 @@ torch::Tensor encode_rows_cuda(torch::Tensor input)
 {
     const int m = input.size(0);
     const int n = input.size(1);
-    const int l = 1+(n-1)/32;
-    const int size = m*l;
+    const int l = 1 + (n-1)/32;
+    const int size = m * l;
 
     torch::Tensor output = torch::zeros({m,l},torch::TensorOptions().dtype(torch::kFloat32).device(torch::kCUDA));
 
@@ -158,6 +150,7 @@ torch::Tensor encode_rows_cuda(torch::Tensor input)
 
     return output;
 }
+
 
 torch::Tensor encode_cols_cuda(torch::Tensor input)
 {
@@ -178,11 +171,10 @@ torch::Tensor encode_cols_cuda(torch::Tensor input)
 
 torch::Tensor test_gemm_cuda(torch::Tensor input_a, torch::Tensor input_b)
 {
-    
     const int m = input_a.size(0);
     const int n = input_a.size(1);
     const int k = input_b.size(1);
-    const int l = 1+(n-1)/32;
+    const int l = 1 + (n-1) / 32;
     const int bin_a_size = m * l;
     torch::Tensor bin_input_a = torch::zeros({m,l},torch::TensorOptions().dtype(torch::kFloat32).device(torch::kCUDA));
 
@@ -205,5 +197,4 @@ torch::Tensor test_gemm_cuda(torch::Tensor input_a, torch::Tensor input_b)
     xnor_gemm_kernel <<<gridDim, blockDim>>> (b1, b2, c2, m, l, k);
 
     return output;
-
 }

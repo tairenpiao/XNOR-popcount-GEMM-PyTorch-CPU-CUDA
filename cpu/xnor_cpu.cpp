@@ -1,9 +1,10 @@
 /*
 PyTorch-XNOR-GEMM-Extention
 Authors: Taaron (ptrandpxq@gmail.com)
-This code can be used only for research purposes.
+This code can only be used for research purposes.
 For other purposes (e.g., commercial), please contact me.
 */
+
 #include <torch/extension.h>
 #include <iostream>
 #include <torch/types.h>
@@ -18,8 +19,8 @@ For other purposes (e.g., commercial), please contact me.
 inline uint32_t encode_val(float* array, int n)
 {
     int sign, r = 0;
-    for (int i=0; i<ENCODE_BIT && i<n; i++) {
-        sign = array[i]>0;
+    for (int i = 0; i < ENCODE_BIT && i < n; i++) {
+        sign = array[i] > 0;
         r |= (sign<<i);
     }
     return r;
@@ -29,7 +30,7 @@ void encode_rows_cpu_kernel(float *columns,  uint32_t *columns_binary, int m, in
 {
     int i, l = 1+(n-1)/ENCODE_BIT;
 
-    for (i = 0; i < m*l; i++) {
+    for (i = 0; i < m * l; i++) {
         int p = n*(i/l)+ENCODE_BIT*(i%l);
         columns_binary[i] = encode_val(&columns[p], n-ENCODE_BIT*(i%l));
     }
@@ -60,9 +61,7 @@ void encode_cols_cpu_kernel(float *columns, uint32_t *columns_binary, int m, int
     for (i = 0; i < col_bin_m; i++) {
         int i64 = i * ENCODE_BIT;
         for (j = 0; j < n && i64<m ; j++) {
-
             uint32_t sign, rvalue = 0;
-
             for (k = 0; j + n * (i64 + k) < m*n && k < ENCODE_BIT; k++) {
                 sign = columns[j + n * (i64 + k)]>0;
                 rvalue |= (sign << k);
@@ -110,20 +109,20 @@ at::Tensor xnor_gemm_cpu(at::Tensor a, at::Tensor b)
     return output;
     
 }
+
+
 at::Tensor my_gemm(at::Tensor a, at::Tensor b)
 {
     at::Tensor output = at::randn({a.size(0),b.size(1)});
     int c;
-
-    for(int i =0; i < a.size(0); i++) {   
-        for(int j=0; j < b.size(1); j++) {
+    for (int i = 0; i < a.size(0); i++) {   
+        for(int j = 0; j < b.size(1); j++) {
             c = 0;
-            for (int i2=0; i2<a.size(1);i2++) {
+            for (int i2 = 0; i2 < a.size(1); i2++) {
                 c +=  a[i][i2].item<float>() * b[i2][j].item<float>();
             }
             output[i][j] = c;
         }
-        
     }
     return output;
 }

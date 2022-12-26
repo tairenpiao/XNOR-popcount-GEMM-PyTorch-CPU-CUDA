@@ -1,11 +1,8 @@
 /*
-SensiMix: Sensitivity-Aware 8-bit Index & 1-bit Value Mixed Precision Quantization for BERT Compression
-Authors:
-- Tairen Piao (piaotairen@snu.ac.kr), Seoul National University
-- Ikhyun Cho (ikhyuncho@snu.ac.kr), Seoul National University
-- U Kang (ukang@snu.ac.kr), Seoul National University
-This software may be used only for research evaluation purposes.
-For other purposes (e.g., commercial), please contact the authors.
+PyTorch-XNOR-GEMM-Extention
+Author: Taaron (ptrandpxq@gmail.com)
+This code can only be used for research purposes.
+For other purposes (e.g., commercial), please contact me.
 */
 
 #include <torch/extension.h>
@@ -29,8 +26,6 @@ torch::Tensor encode_cols(torch::Tensor input) {
 torch::Tensor test_gemm(torch::Tensor input_a, torch::Tensor intput_b) {
   return test_gemm_cuda(input_a,intput_b);
 }
-
-
 
 
 
