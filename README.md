@@ -45,31 +45,48 @@ main.py provides a simple MLP model for testing the XNOR Linear modules.
     Ubuntu 18.04 LTS / Mac Os Catalina/ Windows 10 or later
     C++/CUDA
     Python >= 3.6
-    PyTorch >= 1.4.0 (pytorch 1.9.0 is recommened)
+    PyTorch >= 1.4.0 (pytorch >= 1.9.0 are recommended)
+
+<details>
+<summary>Tested envs </summary>
+
+1. Ubuntu 18.04 LTS, Python 3.6, PyTorch 1.4.0, Both CPU & CUDA
+2. Ubuntu 18.04 LTS, Python 3.8, Pytorch 1.7.0, Both CPU & CUDA
+3. MacOS Ventura 13.3.1(a), Python 3.9, PyTorch 2.0.1, CPU
+</details>
+
+
 
 ## How to Use
 
-### 1. Simulated quantization-aware training (simulated quantization)
+### 1. Simulated quantization-aware training (simulated 1-bit uantization)
     
     python main.py
 
-### 2. Real XNOR GEMM inference (1-bit inference)
+### 2. Setup the custom C++/CUDA PyTorch extensions
+Setup the XNOR GEMM custom operations. For CPU example, run
+
+    cd cpu
+    pip install .  (or python setup.py install (deprecated))
+    python test
+
+You would see the correct output of XNOR GEMM :), and then I think you would know how to use this code
+
+
+### 3. Real XNOR GEMM inference (1-bit inference)
 
 You first need to uncommnet some code (e.g., the xnor_cpu and xnor_cuda in the binarized_modules.py)
     
     cd cuda
-    python setup.py install
+    pip install .  (or python setup.py install (deprecated))
     python test.py
     cd ..
     python main.py
 
 
 ## Contact
-Email: ptrandpxq@gmail.com
+Email: tairenpiao@gmail.com
 
 ## Donations
 I am interested in deep learning, and your support becomes my main motivations.
 If this repo helps, you can give me a star, or buy me a coffee.
-
-<img swidth="440" height="300" src="./images/z.jpg"/>
-<img swidth="440" height="300" src="./images/w.jpg"/>

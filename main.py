@@ -1,6 +1,6 @@
 """
 PyTorch-XNOR-GEMM-Extention
-Authors: Taaron (ptrandpxq@gmail.com)
+Authors: Tairen (tairenpiao@gmail.com)
 This code can be used only for research purposes.
 For other purposes (e.g., commercial), please contact me.
 """
@@ -41,7 +41,7 @@ class Net(nn.Module):
 def train(args, model, device, train_loader, optimizer, epoch):
     model.train()
     for batch_idx, (data, target) in enumerate(train_loader):
-        data = data.view(-1,784)
+        data = data.view(-1, 784)
         data, target = data.to(device), target.to(device)
         optimizer.zero_grad()
         output = model(data)
@@ -72,7 +72,7 @@ def test(args, model, device, test_loader):
     
     with torch.no_grad():
         for data, target in tqdm(test_loader):
-            data = data.view(-1,784)
+            data = data.view(-1, 784)
             data, target = data.to(device), target.to(device)
             output = model(data)
             test_loss += nn.functional.nll_loss(output, target, reduction='sum').item()  # sum up batch loss

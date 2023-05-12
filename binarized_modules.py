@@ -1,6 +1,6 @@
 """
 PyTorch-XNOR-GEMM-Extention
-Authors: Taaron (ptrandpxq@gmail.com)
+Authors: Tairen (tairenpiao@gmail.com)
 This code can be used only for research purposes.
 For other purposes (e.g., commercial), please contact me.
 """
@@ -10,8 +10,6 @@ import math
 import torch.nn as nn
 # import xnor_cpu
 # import xnor_cuda
-import time
-
 
 def Binarize(tensor):
     binarized = torch.where(tensor>0, torch.ones_like(tensor,dtype=torch.float32), torch.full((tensor.shape),-1, dtype=torch.float32))
