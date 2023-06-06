@@ -52,7 +52,7 @@ main.py provides a simple MLP model for testing the XNOR Linear modules.
 
 1. Ubuntu 18.04 LTS, Python 3.6, PyTorch 1.4.0, Both CPU & CUDA
 2. Ubuntu 18.04 LTS, Python 3.8, Pytorch 1.7.0, Both CPU & CUDA
-3. MacOS Ventura 13.3.1(a), Python 3.9, PyTorch 2.0.1, CPU
+3. MacOS Ventura 13.3.1(a), Python 3.9, PyTorch 2.0.1, Intel x86-64 CPU
 </details>
 
 
@@ -68,7 +68,7 @@ Setup the XNOR GEMM custom operations. For CPU example, run
 
     cd cpu
     pip install .  (or python setup.py install (deprecated))
-    python test
+    python test.py
 
 You would see the correct output of XNOR GEMM :), and then I think you would know how to use this code
 

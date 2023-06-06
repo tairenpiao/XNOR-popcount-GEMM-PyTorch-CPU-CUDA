@@ -6,24 +6,24 @@ For other purposes (e.g., commercial), please contact me.
 */
 
 #include <iostream>
-#include <torch/extension.h>
+#include <cstdint>
 #include <cuda.h>
 #include <cuda_runtime.h>
-#include <cstdint>
+#include <torch/extension.h>
 
 
 namespace {
 
-// __device__ uint32_t concatenate(float* array) {
-//     uint32_t rvalue=0;
-//     uint32_t sign;
+__device__ uint32_t concatenate(float *array) {
+    uint32_t rvalue = 0;
+    uint32_t sign;
     
-//     for (int i = 0; i < 32; ++i) {
-//         sign = (array[i] > 0);
-//         rvalue = rvalue | (sign<<i);
-//     }
-//     return rvalue;
-// }
+    for (int i = 0; i < 32; ++i) {
+        sign = (array[i] > 0);
+        rvalue |= (sign << i);
+    }
+    return rvalue;
+}
 
 // __global__ void encode_rows_kernel(float* input, uint32_t* output, int size)
 // { 
@@ -123,7 +123,6 @@ __global__ void xnor_gemm_kernel(uint32_t *A, uint32_t *B, float *C, int m, int 
 
 
 
-
 torch::Tensor encode_rows_cuda(torch::Tensor &input)
 {
     const int m = input.size(0);
@@ -131,7 +130,7 @@ torch::Tensor encode_rows_cuda(torch::Tensor &input)
     const int l = 1 + (n - 1) / 32;
     const int size = m * l;
 
-    torch::Tensor output = torch::zeros({m,l},torch::TensorOptions().dtype(torch::kFloat32).device(torch::kCUDA));
+    torch::Tensor output = torch::zeros({m, l}, torch::TensorOptions().dtype(torch::kFloat32).device(torch::kCUDA));
 
     float *a = (float*)input.data<float>();
     uint32_t *b = (uint32_t*)output.data<float>();
@@ -144,16 +143,15 @@ torch::Tensor encode_rows_cuda(torch::Tensor &input)
     return output;
 }
 
-
 torch::Tensor encode_cols_cuda(torch::Tensor &input)
 {
     const int n = input.size(0);
     const int k = input.size(1);
-    const int l = 1+(n-1)/32;
-    torch::Tensor output = torch::zeros({l,k},torch::TensorOptions().dtype(torch::kFloat32).device(torch::kCUDA));
+    const int l = 1 + (n - 1) / 32;
+    torch::Tensor output = torch::zeros({l, k}, torch::TensorOptions().dtype(torch::kFloat32).device(torch::kCUDA));
 
-    float *a = (float*)input.data<float>();
-    uint32_t *b = (uint32_t*)output.data<float>();
+    float *a = (float *)input.data<float>();
+    uint32_t *b = (uint32_t *)output.data<float>();
     
     const int threadsPerBlock = 64;
     const int blocksPerGrid = k / threadsPerBlock + 1;
@@ -169,18 +167,16 @@ torch::Tensor xnor_gemm_cuda(torch::Tensor &input_a, torch::Tensor &input_b)
     const int k = input_b.size(1);
     const int l = 1 + (n - 1) / 32;
     const int bin_a_size = m * l;
-    torch::Tensor bin_input_a = torch::zeros({m,l},torch::TensorOptions().dtype(torch::kFloat32).device(torch::kCUDA));
+    torch::Tensor bin_input_a = torch::zeros({m, l}, torch::TensorOptions().dtype(torch::kFloat32).device(torch::kCUDA));
 
-
-    float* a1 = (float*)input_a.data<float>();
-    uint32_t* b1 = (uint32_t*)bin_input_a.data<float>();
+    float *a1 = (float *)input_a.data<float>();
+    uint32_t *b1 = (uint32_t *)bin_input_a.data<float>();
 
     const int threadsPerBlock = 64;
     const int blocksPerGrid = m * n / 32  + 1;
-
     encode_rows_kernel<<<blocksPerGrid, threadsPerBlock>>> (a1, b1, bin_a_size);
 
-    torch::Tensor output = torch::zeros({m,k},torch::TensorOptions().dtype(torch::kFloat32).device(torch::kCUDA));
+    torch::Tensor output = torch::zeros({m, k}, torch::TensorOptions().dtype(torch::kFloat32).device(torch::kCUDA));
 
     uint32_t *b2 = (uint32_t*)input_b.data<float>();
     float *c2 = (float*)output.data<float>();

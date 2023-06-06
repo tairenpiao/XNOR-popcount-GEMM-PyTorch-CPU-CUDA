@@ -68,8 +68,6 @@ print("new kernel time is: ",diff_en5*1000,"ms")
 
 
 
-
-
 inputt2 = torch.where(((inputt>0) | (inputt==0)),torch.ones_like(inputt,dtype=torch.float32,device="cuda:0"),torch.full(inputt.shape,-1, dtype=torch.float32,device="cuda:0")).to(device="cuda:0")
 weightt = torch.where(((weight>0) | (weight==0)),torch.ones_like(weight,dtype=torch.float32,device="cuda:0"),torch.full(weight.shape,-1,dtype=torch.float32,device="cuda:0")).to(device="cuda:0")
 

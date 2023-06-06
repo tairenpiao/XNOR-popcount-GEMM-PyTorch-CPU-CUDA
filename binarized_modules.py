@@ -12,11 +12,12 @@ import torch.nn as nn
 # import xnor_cuda
 
 def Binarize(tensor):
-    binarized = torch.where(tensor>0, torch.ones_like(tensor,dtype=torch.float32), torch.full((tensor.shape),-1, dtype=torch.float32))
+    binarized = torch.where(tensor>0, torch.ones_like(tensor,dtype=torch.float32),
+                            torch.full((tensor.shape),-1, dtype=torch.float32))
     return binarized
 
 def xnor_linear(input, weight,bias=True):
-    output = xnor_cuda.test_gemm(input,weight)
+    output = xnor_cuda.xnor_gemm(input,weight)
     if bias is not None:
         output += bias
     ret = output
